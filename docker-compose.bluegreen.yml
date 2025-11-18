@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  myapi-blue:
+    image: myapi:latest
+    container_name: myapi-blue
+    ports:
+      - "5001:8080"
+    networks:
+      - mynet
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+
+  myapi-green:
+    image: myapi:latest
+    container_name: myapi-green
+    ports:
+      - "5002:8080"
+    networks:
+      - mynet
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+
+  nginx:
+    image: nginx
+    container_name: nginx-bluegreen
+    ports:
+      - "5000:80"
+    volumes:
+      - ./nginx-bluegreen.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - myapi-blue
+      - myapi-green
+    networks:
+      - mynet
+
+networks:
+  mynet:
+
